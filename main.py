@@ -1,22 +1,22 @@
 from util import Node, union
 from itertools import combinations
-from random import shuffle
-from time import time
+from random import shuffle, choice, sample
+from time import process_time
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
 
 def main():
-    n = 300
+    n = 500
     avg_m = [0 for _ in range(n)]
     execution_time = [0 for _ in range(n)]
     nodes = [i for i in range(2, n+2)]
     for i in range(n):
         print(f'\rworking on {i}/{n}', end='')
-        start = time()
-        avg_m[i] = sum(algo(nodes[i]) for _ in range(5))/5
-        execution_time[i] = time() - start
+        start = process_time()
+        avg_m[i] = sum(algo2(nodes[i]) for _ in range(10))/10
+        execution_time[i] = process_time() - start
 
     df = pd.DataFrame({
         'm': avg_m,
@@ -51,6 +51,25 @@ def algo(n):
     sample_space = list(combinations(nodes, 2))
     shuffle(sample_space)
     for i, (u, v) in enumerate(sample_space, 1):
+        x = union(u, v)
+        if x.size >= len(nodes)/2:
+            return i
+
+
+def rand_combo(nodes, seen):
+    s = frozenset(sample(nodes, 2))
+    while s in seen:
+        s = frozenset(sample(nodes, 2))
+    seen.add(s)
+    return s
+
+
+# faster algo but harder to prove time complexity
+def algo2(n):
+    nodes = [Node() for _ in range(n)]
+    seen = set()
+    for i in range(len(nodes)**2):
+        (u, v) = rand_combo(nodes, seen)
         x = union(u, v)
         if x.size >= len(nodes)/2:
             return i
