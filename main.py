@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 
 
 def main():
-    n = 500
+    n = 1000
     avg_m = [0 for _ in range(n)]
     execution_time = [0 for _ in range(n)]
     nodes = [i for i in range(2, n+2)]
@@ -26,7 +26,7 @@ def main():
 
     fig = make_subplots(
         rows=2, cols=2,
-        subplot_titles=('Nodes vs First m', 'Nodes vs Time', "Nodes / First m",)
+        subplot_titles=('n vs First m', 'n vs Time', "m / n", "time / n")
     )
 
     fig.add_trace(
@@ -42,6 +42,11 @@ def main():
     fig.add_trace(
         go.Scatter(x=df.n, y=df.m/df.n),
         row=2, col=1
+    )
+
+    fig.add_trace(
+        go.Scatter(x=df.n, y=df.time/df.n),
+        row=2, col=2
     )
     fig.show()
 
