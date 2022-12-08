@@ -1,4 +1,6 @@
 class Node:
+    __slots__ = ('parent', 'size')
+
     def __init__(self):
         self.parent = self
         self.size = 1
