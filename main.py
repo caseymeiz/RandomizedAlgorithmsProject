@@ -62,9 +62,9 @@ def algo(n):
 
 
 def rand_combo(nodes, seen):
-    s = frozenset(sample(nodes, 2))
+    s = tuple(sorted(sample(nodes, 2), key=id))
     while s in seen:
-        s = frozenset(sample(nodes, 2))
+        s = tuple(sorted(sample(nodes, 2), key=id))
     seen.add(s)
     return s
 
