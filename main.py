@@ -1,6 +1,6 @@
 from util import Node, union
 from itertools import combinations
-from random import shuffle, choice, sample
+from random import shuffle, sample
 from time import process_time
 import pandas as pd
 from plotly.subplots import make_subplots
@@ -15,7 +15,7 @@ def main():
     for i in range(n):
         print(f'\rworking on {i}/{n}', end='')
         start = process_time()
-        avg_m[i] = sum(algo2(nodes[i]) for _ in range(10))/10
+        avg_m[i] = sum(algo2(nodes[i]) for _ in range(5))/5
         execution_time[i] = process_time() - start
 
     df = pd.DataFrame({
@@ -73,7 +73,7 @@ def rand_combo(nodes, seen):
 def algo2(n):
     nodes = [Node() for _ in range(n)]
     seen = set()
-    for i in range(len(nodes)**2):
+    for i in range(1, len(nodes)**2):
         (u, v) = rand_combo(nodes, seen)
         x = union(u, v)
         if x.size >= len(nodes)/2:
