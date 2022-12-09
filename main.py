@@ -8,15 +8,15 @@ import plotly.graph_objects as go
 
 
 def main():
-    n = 1000
-    avg_m = [0 for _ in range(n)]
-    execution_time = [0 for _ in range(n)]
-    nodes = [i for i in range(2, n+2)]
-    for i in range(n):
-        print(f'\rworking on {i}/{n}', end='')
+    nodes = list(range(500, 3001, 500))
+    trials = 1000
+    avg_m = [0 for _ in nodes]
+    execution_time = [0 for _ in nodes]
+    for i in range(len(nodes)):
+        print(f'\rworking on {i}/{len(nodes)}', end='')
         start = process_time()
-        avg_m[i] = sum(algo2(nodes[i]) for _ in range(5))/5
-        execution_time[i] = process_time() - start
+        avg_m[i] = sum(algo2(nodes[i]) for _ in range(trials))/trials
+        execution_time[i] = (process_time() - start)/trials
 
     df = pd.DataFrame({
         'm': avg_m,
@@ -25,8 +25,14 @@ def main():
     })
 
     fig = make_subplots(
-        rows=2, cols=2,
-        subplot_titles=('n vs First m', 'n vs Time', "m / n", "time / n")
+        rows=3, cols=2,
+        subplot_titles=(
+            'First m edges in graph with component n/2',
+            'Seconds to find first m edges in graph with component n/2',
+            "Ratio of edges to nodes",
+            "Ratio of seconds per node",
+            "Edges in graph vs maximal edges"
+        )
     )
 
     fig.add_trace(
@@ -48,7 +54,25 @@ def main():
         go.Scatter(x=df.n, y=df.time/df.n),
         row=2, col=2
     )
-    fig.show()
+
+    fig.add_trace(
+        go.Scatter(x=df.n*(df.n-1)/2, y=df.m),
+        row=3, col=1
+    )
+
+    fig.update_xaxes(title_text="Nodes per graph", row=1, col=1)
+    fig.update_xaxes(title_text="Nodes per graph", row=1, col=2)
+    fig.update_xaxes(title_text="Nodes per graph", row=2, col=1)
+    fig.update_xaxes(title_text="Nodes per graph", row=2, col=2)
+
+    fig.update_yaxes(title_text="Edges per graph", row=1, col=1)
+    fig.update_yaxes(title_text="Seconds per graph", row=1, col=2)
+    fig.update_yaxes(title_text="Ratio of edges to nodes", row=2, col=1)
+    fig.update_yaxes(title_text="Seconds per node", row=2, col=2)
+
+    fig.update_layout(title_text=f'trials: {trials}')
+
+    fig.write_html(f'sample range: {nodes[0]}-{nodes[-1]} trials: {trials}.html')
 
 
 def algo(n):
