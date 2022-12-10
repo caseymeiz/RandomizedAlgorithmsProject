@@ -7,9 +7,9 @@ class Node:
 
 
 def find(x):
-    if x.parent != x:
-        x.parent = find(x.parent)
-        return x.parent
+    while x.parent != x:
+        x.parent = x.parent.parent
+        x = x.parent
     return x
 
 

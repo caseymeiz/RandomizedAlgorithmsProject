@@ -8,8 +8,8 @@ import plotly.graph_objects as go
 
 
 def main():
-    nodes = list(range(25, 200, 1))
-    trials = 10000
+    nodes = list(range(25, 1000025, 100000))
+    trials = 10
     avg_m = [0 for _ in nodes]
     execution_time = [0 for _ in nodes]
     for i in range(len(nodes)):
@@ -31,12 +31,15 @@ def main():
             'Seconds to find first m edges in graph with component n/2',
             "Ratio of edges to nodes",
             "Ratio of seconds per node",
-            "Edges in graph vs maximal edges"
         )
     )
 
     fig.add_trace(
         go.Scatter(x=df.n, y=df.m),
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(x=df.n, y=df.n*.7),
         row=1, col=1
     )
 
@@ -55,15 +58,7 @@ def main():
         row=2, col=2
     )
 
-    fig.add_trace(
-        go.Scatter(x=df.n*(df.n-1)/2, y=df.m),
-        row=3, col=1
-    )
 
-    fig.add_trace(
-        go.Scatter(x=df.n, y=df.n*(df.n-1)/2),
-        row=3, col=2
-    )
 
     fig.update_xaxes(title_text="Nodes per graph", row=1, col=1)
     fig.update_xaxes(title_text="Nodes per graph", row=1, col=2)
