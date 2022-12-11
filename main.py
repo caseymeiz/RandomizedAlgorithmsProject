@@ -8,28 +8,47 @@ import plotly.graph_objects as go
 import math
 import numpy as np
 
-
 def main():
+    # number of nodes in graphs
     nodes = list(range(25, 200, 1)) + [200]
+
+    # number of trials for each graph size
     trials = 100
+
+    # collected metrics
     avg_m = [0 for _ in nodes]
-    std_m = [0 for _ in nodes]
     var_m = [0 for _ in nodes]
     upper_m = [0 for _ in nodes]
     lower_m = [0 for _ in nodes]
     execution_time = [0 for _ in nodes]
+
+    # run the algorithm for each node size and collect metrics
     for i in range(len(nodes)):
         print(f'\rworking on {i}/{len(nodes)}', end='')
         start = process_time()
+
+        # number of edges to get a connected set of n/2 nodes
+        # one value per trial
         m_values = [algo2(nodes[i]) for _ in range(trials)]
+
+        # average number of edges for this size of graph
         avg_m[i] = sum(m_values)/trials
+
+        # variance of distribution of number of edges
         var_m[i] = np.var(m_values)
+
+        # lower and upper bounds on confidence interval
+        (lower_m[i], upper_m[i]) = confidence_interval(avg_m[i], var_m[i], trials)
+
+        # execution time for this graph size
         execution_time[i] = (process_time() - start)/trials
 
-        (lower_m[i], upper_m[i]) = confidence_interval(avg_m[i], var_m[i], trials)
+
+    # graph collected metrics
 
     df = pd.DataFrame({
         'm': avg_m,
+        'var': var_m,
         'time': execution_time,
         'n': nodes,
         'upper': upper_m,
@@ -37,56 +56,81 @@ def main():
     })
 
     fig = make_subplots(
-        rows=3, cols=2,
+        rows=2, cols=3,
         subplot_titles=(
-            'First m edges in graph with component n/2',
-            'Seconds to find first m edges in graph with component n/2',
-            "Ratio of edges to nodes",
-            "Ratio of seconds per node",
+            'X/t vs. n',
+            'Confidence Interval Width vs. n',
+            'Distribution of M',
+            'Sample Variance of M vs. n',
+            'Runtime vs. n',
+            'Average Runtime per Trial vs. n'
         )
     )
 
+    # X/t vs. n
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.m, name="m", mode="lines"),
+        go.Scatter(x=df.n, y=df.m, name="X/t", mode="lines"),
         row=1, col=1
     )
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.upper, name="upper_bound", mode="lines"),
+        go.Scatter(x=df.n, y=df.upper, name="X/t (Upper Bound)", mode="lines",  line = dict(color='rgba(0,0,0,0)')),
         row=1, col=1
     )
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.lower, name="lower_bound", mode="lines", fill="tonexty"),
+        go.Scatter(x=df.n, y=df.lower, name="X/t (Lower Bound)", mode="lines", fill="tonexty",  line = dict(color='rgba(0,0,0,0)')),
         row=1, col=1
     )
 
+    # Confidence Interval Width vs. n
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.time),
+        go.Scatter(x=df.n, y=df.upper - df.lower, name="Confidence Interval Width", mode="lines"),
         row=1, col=2
     )
 
+    # Distribution of M for n = 100 for 10000 trials
+    ms = [0] * 10000
+    for i in range(10000):
+        ms[i] = algo2(100)
+
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.m/df.n),
+        go.Histogram(
+            x=ms
+        ), row=1, col=3,
+    )
+
+    # Sample variance of M vs. n
+    fig.add_trace(
+        go.Scatter(x=df.n, y=var_m, name="Sample Variance of M", mode="lines"),
         row=2, col=1
     )
 
+    # Runtime vs. n
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.time/df.n),
+        go.Scatter(x=df.n, y=df.time, name="Runtime", mode="lines"),
         row=2, col=2
     )
 
-
-
+    # Average Runtime per trial vs. n
+    fig.add_trace(
+        go.Scatter(x=df.n, y=df.time/trials, name="Runtime", mode="lines"),
+        row=2, col=3
+    )
 
 
     fig.update_xaxes(title_text="Nodes per graph", row=1, col=1)
     fig.update_xaxes(title_text="Nodes per graph", row=1, col=2)
+    fig.update_xaxes(title_text="Nodes per graph", row=1, col=3)
     fig.update_xaxes(title_text="Nodes per graph", row=2, col=1)
     fig.update_xaxes(title_text="Nodes per graph", row=2, col=2)
+    fig.update_xaxes(title_text="Nodes per graph", row=2, col=3)
 
-    fig.update_yaxes(title_text="Edges per graph", row=1, col=1)
-    fig.update_yaxes(title_text="Seconds per graph", row=1, col=2)
-    fig.update_yaxes(title_text="Ratio of edges to nodes", row=2, col=1)
-    fig.update_yaxes(title_text="Seconds per node", row=2, col=2)
+    fig.update_yaxes(title_text="Average Number of Edges", row=1, col=1)
+    fig.update_yaxes(title_text="Edges", row=1, col=2)
+    fig.update_yaxes(title_text="Edges", row=1, col=3)
+    fig.update_yaxes(title_text="Edges", row=2, col=1)
+    fig.update_yaxes(title_text="Time (seconds)", row=2, col=2)
+    fig.update_yaxes(title_text="Average Time (seconds)", row=2, col=3)
+
 
     fig.update_layout(title_text=f'trials: {trials}')
 
