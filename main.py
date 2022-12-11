@@ -8,8 +8,8 @@ import plotly.graph_objects as go
 
 
 def main():
-    nodes = list(range(1000000, 10000000, 1000000)) + [10000000]
-    trials = 20
+    nodes = list(range(100000, 1000000, 100000)) + [1000000]
+    trials = 1000
     avg_m = [0 for _ in nodes]
     execution_time = [0 for _ in nodes]
     for i in range(len(nodes)):
