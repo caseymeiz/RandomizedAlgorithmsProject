@@ -64,7 +64,7 @@ int algo(int n){
     if (seen.contains(make_pair(ui, vi))){
       continue;
     }
-    i ++;
+    i++;
     Node* u = nodes[ui];
     Node* v = nodes[vi];
     Node* x = merge(u, v);
@@ -73,7 +73,7 @@ int algo(int n){
          delete p;
        } 
        nodes.clear();
-      return i+1;
+      return i;
     }
   }
 }

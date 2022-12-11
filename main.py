@@ -6,23 +6,28 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import math
+import numpy as np
 
 
 def main():
     nodes = list(range(25, 200, 1)) + [200]
     trials = 1000
     avg_m = [0 for _ in nodes]
+    std_m = [0 for _ in nodes]
     execution_time = [0 for _ in nodes]
     for i in range(len(nodes)):
         print(f'\rworking on {i}/{len(nodes)}', end='')
         start = process_time()
-        avg_m[i] = sum(algo2(nodes[i]) for _ in range(trials))/trials
+        m_values = [algo2(nodes[i]) for _ in range(trials)]
+        avg_m[i] = sum(m_values)/trials
+        std_m[i] = np.std(m_values)
         execution_time[i] = (process_time() - start)/trials
 
     df = pd.DataFrame({
         'm': avg_m,
         'time': execution_time,
-        'n': nodes
+        'n': nodes,
+        'std_m': std_m
     })
 
     fig = make_subplots(
@@ -37,6 +42,14 @@ def main():
 
     fig.add_trace(
         go.Scatter(x=df.n, y=df.m),
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(x=df.n, y=df.m+df.std_m),
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(x=df.n, y=df.m-df.std_m),
         row=1, col=1
     )
 
@@ -54,6 +67,8 @@ def main():
         go.Scatter(x=df.n, y=df.time/df.n),
         row=2, col=2
     )
+
+
 
 
 
@@ -94,7 +109,7 @@ def rand_combo(nodes, seen):
 def algo2(n):
     nodes = [Node() for _ in range(n)]
     seen = set()
-    for i in range(1, len(nodes)**2):
+    for i in range(1, len(nodes)**3):
         (u, v) = rand_combo(nodes, seen)
         x = union(u, v)
         if x.size >= len(nodes)/2:
