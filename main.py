@@ -5,6 +5,7 @@ from time import process_time
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+import math
 
 
 def main():
@@ -98,6 +99,14 @@ def algo2(n):
         x = union(u, v)
         if x.size >= len(nodes)/2:
             return i
+
+# calculate upper and lower bound of 95% confidence interval
+# returns a 2 element tuple (lower bound, upper bound)
+# requires the sample mean, sample variance, and number of trials
+def confidence_interval(sample_mean, sample_variance, trials):
+    sigma = (math.sqrt(trials * sample_variance) * math.sqrt(20)) / trials
+
+    return (sample_mean - sigma, sample_mean + sigma)
 
 
 if __name__ == '__main__':
