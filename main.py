@@ -8,8 +8,8 @@ import plotly.graph_objects as go
 
 
 def main():
-    nodes = list(range(25, 1000025, 100000))
-    trials = 10
+    nodes = list(range(1000000, 10000000, 1000000)) + [10000000]
+    trials = 20
     avg_m = [0 for _ in nodes]
     execution_time = [0 for _ in nodes]
     for i in range(len(nodes)):
@@ -36,10 +36,6 @@ def main():
 
     fig.add_trace(
         go.Scatter(x=df.n, y=df.m),
-        row=1, col=1
-    )
-    fig.add_trace(
-        go.Scatter(x=df.n, y=df.n*.7),
         row=1, col=1
     )
 
@@ -75,7 +71,7 @@ def main():
     fig.write_html(f'sample range: {nodes[0]}-{nodes[-1]} total samples:{len(nodes)} trials: {trials}.html')
 
 
-def algo(n):
+def bad_algo(n):
     nodes = [Node() for _ in range(n)]
     sample_space = list(combinations(nodes, 2))
     shuffle(sample_space)
