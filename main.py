@@ -11,7 +11,7 @@ import numpy as np
 
 def main():
     nodes = list(range(25, 200, 1)) + [200]
-    trials = 1000
+    trials = 100
     avg_m = [0 for _ in nodes]
     std_m = [0 for _ in nodes]
     var_m = [0 for _ in nodes]
@@ -26,7 +26,7 @@ def main():
         var_m[i] = np.var(m_values)
         execution_time[i] = (process_time() - start)/trials
 
-        (upper_m[i], lower_m[i]) = confidence_interval(avg_m[i], var_m[i], trials)
+        (lower_m[i], upper_m[i]) = confidence_interval(avg_m[i], var_m[i], trials)
 
     df = pd.DataFrame({
         'm': avg_m,
@@ -47,15 +47,15 @@ def main():
     )
 
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.m),
+        go.Scatter(x=df.n, y=df.m, name="m", mode="lines"),
         row=1, col=1
     )
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.upper),
+        go.Scatter(x=df.n, y=df.upper, name="upper_bound", mode="lines"),
         row=1, col=1
     )
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.lower),
+        go.Scatter(x=df.n, y=df.lower, name="lower_bound", mode="lines", fill="tonexty"),
         row=1, col=1
     )
 
