@@ -14,20 +14,26 @@ def main():
     trials = 1000
     avg_m = [0 for _ in nodes]
     std_m = [0 for _ in nodes]
+    var_m = [0 for _ in nodes]
+    upper_m = [0 for _ in nodes]
+    lower_m = [0 for _ in nodes]
     execution_time = [0 for _ in nodes]
     for i in range(len(nodes)):
         print(f'\rworking on {i}/{len(nodes)}', end='')
         start = process_time()
         m_values = [algo2(nodes[i]) for _ in range(trials)]
         avg_m[i] = sum(m_values)/trials
-        std_m[i] = np.std(m_values)
+        var_m[i] = np.var(m_values)
         execution_time[i] = (process_time() - start)/trials
+
+        (upper_m[i], lower_m[i]) = confidence_interval(avg_m[i], var_m[i], trials)
 
     df = pd.DataFrame({
         'm': avg_m,
         'time': execution_time,
         'n': nodes,
-        'std_m': std_m
+        'upper': upper_m,
+        'lower': lower_m
     })
 
     fig = make_subplots(
@@ -45,11 +51,11 @@ def main():
         row=1, col=1
     )
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.m+df.std_m),
+        go.Scatter(x=df.n, y=df.upper),
         row=1, col=1
     )
     fig.add_trace(
-        go.Scatter(x=df.n, y=df.m-df.std_m),
+        go.Scatter(x=df.n, y=df.lower),
         row=1, col=1
     )
 
