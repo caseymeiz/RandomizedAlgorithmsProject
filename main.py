@@ -8,12 +8,18 @@ import plotly.graph_objects as go
 import math
 import numpy as np
 
-def main():
-    # number of nodes in graphs
-    nodes = list(range(25, 200, 1)) + [200]
+# constants
+MIN_NODES = 25
+MAX_NODES = 1000
+STEP_SIZE = 1
+TRIALS = 100
 
-    # number of trials for each graph size
-    trials = 100
+
+def main():
+    trials = TRIALS
+
+    # number of nodes in graphs
+    nodes = list(range(MIN_NODES, MAX_NODES, STEP_SIZE)) + [MAX_NODES]
 
     # collected metrics
     avg_m = [0 for _ in nodes]
@@ -56,14 +62,15 @@ def main():
     })
 
     fig = make_subplots(
-        rows=2, cols=3,
+        rows=3, cols=3,
         subplot_titles=(
             'X/t vs. n',
             'Confidence Interval Width vs. n',
             'Distribution of M',
             'Sample Variance of M vs. n',
             'Runtime vs. n',
-            'Average Runtime per Trial vs. n'
+            'Average Runtime per Trial vs. n',
+            'Runtime / Number of Nodes vs. n'
         )
     )
 
@@ -116,6 +123,12 @@ def main():
         row=2, col=3
     )
 
+    # Runtime per number of nodes vs. n
+    fig.add_trace(
+        go.Scatter(x=df.n, y=df.time/df.n, name="Runtime", mode="lines"),
+        row=3, col=1
+    )
+
 
     fig.update_xaxes(title_text="Nodes per graph", row=1, col=1)
     fig.update_xaxes(title_text="Nodes per graph", row=1, col=2)
@@ -123,6 +136,7 @@ def main():
     fig.update_xaxes(title_text="Nodes per graph", row=2, col=1)
     fig.update_xaxes(title_text="Nodes per graph", row=2, col=2)
     fig.update_xaxes(title_text="Nodes per graph", row=2, col=3)
+    fig.update_xaxes(title_text="Nodes per graph", row=3, col=1)
 
     fig.update_yaxes(title_text="Average Number of Edges", row=1, col=1)
     fig.update_yaxes(title_text="Edges", row=1, col=2)
@@ -130,6 +144,7 @@ def main():
     fig.update_yaxes(title_text="Edges", row=2, col=1)
     fig.update_yaxes(title_text="Time (seconds)", row=2, col=2)
     fig.update_yaxes(title_text="Average Time (seconds)", row=2, col=3)
+    fig.update_yaxes(title_text="Time (seconds)", row=3, col=1)
 
 
     fig.update_layout(title_text=f'trials: {trials}')
