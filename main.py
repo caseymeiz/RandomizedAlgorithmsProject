@@ -10,7 +10,7 @@ import numpy as np
 
 # constants
 MIN_NODES = 25
-MAX_NODES = 1000
+MAX_NODES = 1000 
 STEP_SIZE = 1
 TRIALS = 100
 
@@ -132,7 +132,7 @@ def main():
 
     fig.update_xaxes(title_text="Nodes per graph", row=1, col=1)
     fig.update_xaxes(title_text="Nodes per graph", row=1, col=2)
-    fig.update_xaxes(title_text="Nodes per graph", row=1, col=3)
+    fig.update_xaxes(title_text="Edges", row=1, col=3)
     fig.update_xaxes(title_text="Nodes per graph", row=2, col=1)
     fig.update_xaxes(title_text="Nodes per graph", row=2, col=2)
     fig.update_xaxes(title_text="Nodes per graph", row=2, col=3)
@@ -140,7 +140,7 @@ def main():
 
     fig.update_yaxes(title_text="Average Number of Edges", row=1, col=1)
     fig.update_yaxes(title_text="Edges", row=1, col=2)
-    fig.update_yaxes(title_text="Edges", row=1, col=3)
+    fig.update_yaxes(title_text="Count", row=1, col=3)
     fig.update_yaxes(title_text="Edges", row=2, col=1)
     fig.update_yaxes(title_text="Time (seconds)", row=2, col=2)
     fig.update_yaxes(title_text="Average Time (seconds)", row=2, col=3)
