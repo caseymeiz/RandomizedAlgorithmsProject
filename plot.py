@@ -2,12 +2,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-data = "25-200"
+data = "."
 
-avg_edges = pd.read_csv(f"data/{data}/avg_m.txt", names=["m"])
-avg_time = pd.read_csv(f"data/{data}/avg_t.txt", names=["time"])
-nodes = pd.read_csv(f"data/{data}/nodes.txt", names=["nodes"])
-trials = pd.read_csv(f"data/{data}/trials.txt", names=["trials"])
+avg_edges = pd.read_csv(f"{data}/avg_m.txt", names=["m"])
+avg_time = pd.read_csv(f"{data}/avg_t.txt", names=["time"])
+nodes = pd.read_csv(f"{data}/nodes.txt", names=["nodes"])
+trials = pd.read_csv(f"{data}/trials.txt", names=["trials"])
 
 df = pd.concat([avg_edges, avg_time, nodes], axis=1)
 
