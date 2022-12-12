@@ -157,12 +157,19 @@ def bad_algo(n):
     sample_space = list(combinations(nodes, 2))
     shuffle(sample_space)
     for i, (u, v) in enumerate(sample_space, 1):
-        x = union(u, v)
-        if x.size >= len(nodes)/2:
+        parent_component = union(u, v)
+        if parent_component.size >= len(nodes)/2:
             return i
 
 
-def rand_combo(nodes, seen):
+def sample_edge(nodes, seen):
+    """
+    Creates a random edge between two nodes
+    Without replacement
+    :param nodes: Collection of nodes in a graph
+    :param seen: Collection of unique edges
+    :return: random edge between to nodes not in seen
+    """
     s = tuple(sorted(sample(nodes, 2), key=id))
     while s in seen:
         s = tuple(sorted(sample(nodes, 2), key=id))
@@ -170,14 +177,19 @@ def rand_combo(nodes, seen):
     return s
 
 
-# faster algo but harder to prove time complexity
 def algo2(n):
+    """
+    Sample an Erdos-Renyi random graph with n vertices such that the first m
+    edges construct a graph with a component that has at least n/2 vertices.
+    param n: number of vertices in the graph
+    :return: number of edges in graph
+    """
     nodes = [Node() for _ in range(n)]
     seen = set()
     for i in range(1, len(nodes)**3):
-        (u, v) = rand_combo(nodes, seen)
-        x = union(u, v)
-        if x.size >= len(nodes)/2:
+        (u, v) = sample_edge(nodes, seen)
+        root = union(u, v)
+        if root.size >= len(nodes)/2:
             return i
 
 # calculate upper and lower bound of 95% confidence interval
